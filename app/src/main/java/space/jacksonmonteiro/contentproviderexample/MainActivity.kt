@@ -1,32 +1,60 @@
 package space.jacksonmonteiro.contentproviderexample
 
+import android.Manifest.permission.READ_CONTACTS
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
+import android.provider.ContactsContract
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import space.jacksonmonteiro.contentproviderexample.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+private const val TAG = "MainActivity"
+private const val REQUEST_CODE_READ_CONTACTS = 1
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var contactNames: ListView
+
+    private var readGranted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setSupportActionBar(binding.toolbar)
 
+        contactNames = findViewById(R.id.contact_names)
+
+        val hasReadContactsPermission = ContextCompat.checkSelfPermission(this, READ_CONTACTS)
+        Log.d(TAG, "onCreate: checkSelfPermission returned $hasReadContactsPermission")
+
         binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            Log.d(TAG, "Fab onClick: starts")
+
+            val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY);
+
+            val cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+                projection,
+                null,
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+
+            val contacts = ArrayList<String>()
+            cursor?.use {
+                while (it.moveToNext()) {
+                    contacts.add(it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)))
+                }
+            }
+
+            val adapter = ArrayAdapter<String>(this, R.layout.contact_detail, R.id.name, contacts)
+            contactNames.adapter = adapter
+
+
+            Log.d(TAG, "Fab onClick: ends")
         }
     }
 
