@@ -39,10 +39,15 @@ class MainActivity : AppCompatActivity() {
         val hasReadContactsPermission = ContextCompat.checkSelfPermission(this, READ_CONTACTS)
         Log.d(TAG, "onCreate: checkSelfPermission returned $hasReadContactsPermission")
 
-        if (hasReadContactsPermission == PackageManager.PERMISSION_GRANTED) {
+        /*if (hasReadContactsPermission == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "onCreate: permission granted")
             // readGranted = true
         } else {
+            Log.d(TAG, "onCreate: requesting permission")
+            ActivityCompat.requestPermissions(this, arrayOf(READ_CONTACTS), REQUEST_CODE_READ_CONTACTS)
+        }*/
+
+        if (hasReadContactsPermission == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "onCreate: requesting permission")
             ActivityCompat.requestPermissions(this, arrayOf(READ_CONTACTS), REQUEST_CODE_READ_CONTACTS)
         }
@@ -97,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onCreate: ends")
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,permissions: Array<out String>, grantResults: IntArray) {
+    /*override fun onRequestPermissionsResult(requestCode: Int,permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d(TAG, "onRequestPermissionResult: starts")
 
@@ -116,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         Log.d(TAG, "onRequestPermissionResult: ends")
-    }
+    }*/
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
